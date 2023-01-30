@@ -7,8 +7,6 @@ yc iam service-account delete --name $(cat init.conf | grep service_account | se
 
 rm -rf terraform/.terraform*
 rm -rf terraform/terraform*
-rm terraform.tfstate
-rm terraform/main.tf
 rm key.json
 unset "${!YC@}"
 echo $'\n'I did it!$'\n'

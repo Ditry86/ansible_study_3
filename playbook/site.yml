@@ -1,0 +1,91 @@
+---
+# Make clickhouse
+- name: Install Clickhouse
+  hosts: clickhouse
+  handlers:
+    - name: Start clickhouse service
+      become: true
+      ansible.builtin.service:
+        name: clickhouse-server
+        state: restarted
+      listen: "start clickhouse"
+  tasks:
+    - block:
+        - name: Get clickhouse distrib
+          ansible.builtin.get_url:
+            url: "https://packages.clickhouse.com/rpm/stable/{{ item }}-{{ clickhouse_version }}.noarch.rpm"
+            dest: "./{{ item }}-{{ clickhouse_version }}.rpm"
+          with_items: "{{ clickhouse_packages }}"
+      rescue:
+        - name: Get clickhouse distrib
+          ansible.builtin.get_url:
+            url: "https://packages.clickhouse.com/rpm/stable/clickhouse-common-static-{{ clickhouse_version }}.x86_64.rpm"
+            dest: "./clickhouse-common-static-{{ clickhouse_version }}.rpm"
+    - name: Install clickhouse packages
+      become: true
+      ansible.builtin.yum:
+        name:
+          - clickhouse-common-static-{{ clickhouse_version }}.rpm
+          - clickhouse-client-{{ clickhouse_version }}.rpm
+          - clickhouse-server-{{ clickhouse_version }}.rpm
+    - name: Set access_mamnagement privileges
+      become: true
+      ansible.builtin.lineinfile:
+        path: /etc/clickhouse-server/users.xml
+        search_string: '            <!-- <access_management>1</access_management> -->'
+        line: '            <access_management>1</access_management>'
+      notify: start clickhouse
+    - name: Flush handlers
+      ansible.builtin.meta: flush_handlers
+    - name: Wait 5 sec
+      ansible.builtin.pause:
+        seconds: 5
+    - name: Create database
+      ansible.builtin.command: clickhouse-client -q "create database logs;"
+      register: create_db
+      failed_when: create_db.rc != 0 and create_db.rc !=82
+      changed_when: create_db.rc == 0
+    - name: Create database user
+      ansible.builtin.command: clickhouse-client -q "CREATE USER IF NOT EXISTS {{ clickhouse_user }} HOST IP '{{ source_host }}' IDENTIFIED WITH sha256_password BY '{{ clickhouse_password }}';"
+      changed_when: false
+    - name: Create table
+      ansible.builtin.command: clickhouse-client -q "CREATE TABLE IF NOT EXISTS logs.test_logs (file String, host String, message String, source_type String, timestamp DateTime64) ENGINE = TinyLog;"
+      changed_when: false
+- name: Install Vector
+  hosts: vector
+  handlers:
+    - name: Restart vector service
+      become: true
+      ansible.builtin.service:
+        name: vector
+        state: restarted
+      listen: "restart vector"
+  tasks:
+    - name: Get vector rpm
+      ansible.builtin.get_url:
+        url: "https://packages.timber.io/vector/{{ vector_version }}/vector-{{ vector_version }}-1.{{ ansible_architecture }}.rpm"
+        dest: "./vector-{{ vector_version }}.rpm"
+        mode: '0755'
+    - name: Create vector config dir
+      ansible.builtin.file:
+        path: "{{ vector_config_dir }}"
+        state: directory
+        mode: 0644
+    - name: Configure Vector | Template config
+      become: true
+      ansible.builtin.template:
+        src: vector.yml.j2
+        mode: 0644
+        dest: "{{ vector_config_dir }}/vector.yml"
+    - name: Install vector
+      become: true
+      ansible.builtin.yum:
+        name: "{{ ansible_user_dir }}/vector-{{ vector_version }}.rpm"
+        state: present
+    - name: Create log file
+      become: true
+      ansible.builtin.file:
+        path: "{{ ansible_user_dir }}/test.log"
+        state: touch
+        mode: 0644
+      notify: restart vector

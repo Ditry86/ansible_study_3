@@ -1,0 +1,19 @@
+---
+clickhouse:
+  hosts:
+    clickhouse-01:
+      ansible_host: "{{ lookup('env','CLICKHOUSE_IP') }}"
+      ansible_user: vagrant
+      ansible_password: vagrant
+vector:
+  hosts:
+    vector-01:
+      ansible_host: "{{ lookup('env','VECTOR_IP') }}"
+      ansible_user: vagrant
+      ansible_password: vagrant
+lighthouse:
+  hosts:
+    lighthouse-01:
+      ansible_host: "{{ lookup('env','LIGHTHOUSE_IP') }}"
+      ansible_user: vagrant
+      ansible_password: vagrant
