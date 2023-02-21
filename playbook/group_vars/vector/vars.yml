@@ -3,7 +3,7 @@ vector_version: 0.27.0
 vector_config_dir: "{{ ansible_user_dir }}/vector_config"
 clickhouse_user: loger
 clickhouse_password: loger
-dest_host: "{{ lookup('env','CLICKHOUSE_IP') }}"
+dest_host: "{{ lookup('env','CLICKHOUSE_IP') | ansible.utils.ipv4 }}"
 vector_config:
   sources:
     source_log_file:

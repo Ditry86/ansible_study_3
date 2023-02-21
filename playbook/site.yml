@@ -1,5 +1,4 @@
 ---
-# Make clickhouse
 - name: Install Clickhouse
   hosts: clickhouse
   handlers:
@@ -89,3 +88,78 @@
         state: touch
         mode: 0644
       notify: restart vector
+- name: Install Lighthouse
+  hosts: lighthouse
+  handlers:
+    - name: Start nginx
+      become: true
+      ansible.builtin.service:
+        name: nginx
+        state: restarted
+    - name: Reboot system
+      become: true
+      ansible.builtin.command: reboot
+  tasks:
+    - name: Istall the latest version of git
+      become: true
+      ansible.builtin.yum:
+        name: git
+        state: present
+    - name: Add nginx repository
+      become: true
+      ansible.builtin.yum_repository:
+        name: nginx
+        description: NGINX stable repo
+        baseurl: http://nginx.org/packages/centos/$releasever/$basearch/
+        gpgcheck: true
+        enabled: true
+        gpgkey: https://nginx.org/keys/nginx_signing.key
+        module_hotfixes: true
+    - name: Install nginx
+      become: true
+      ansible.builtin.yum:
+        update_cache: true
+        name: nginx
+    - name: Make site dir
+      become: true
+      ansible.builtin.file:
+        path: /data/www
+        state: directory
+        mode: '0755'
+    - name: Make nginx config file
+      become: true
+      ansible.builtin.template:
+        src: nginx.conf
+        mode: 0644
+        dest: "{{ nginx_conf_dir }}/nginx.conf"
+    - name: Clone lighthouse
+      become: true
+      ansible.builtin.git:
+        repo: "{{ lighthouse_source_url }}"
+        dest: /data/www
+        version: master
+    - name: Disable SELinux
+      become: true
+      ansible.builtin.lineinfile:
+        path: /etc/selinux/config
+        search_string: 'SELINUX=enforcing'
+        line: 'SELINUX=disabled'
+    - name: Install CentOS firewall
+      become: true
+      ansible.builtin.yum:
+        name: firewalld
+    - name: Enable firewalld service
+      become: true
+      ansible.builtin.command: systemctl enable firewalld
+    - name: Start firewalld service
+      become: true
+      ansible.builtin.service:
+        name: firewalld
+        state: started
+    - name: Open http port
+      become: true
+      ansible.builtin.shell: | 
+        firewall-cmd --zone=public --permanent --add-service=http 
+        firewall-cmd --reload
+      notify: Start nginx
+
