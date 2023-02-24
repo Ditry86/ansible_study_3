@@ -91,14 +91,9 @@
 - name: Install Lighthouse
   hosts: lighthouse
   handlers:
-    - name: Start nginx
-      become: true
-      ansible.builtin.service:
-        name: nginx
-        state: restarted
     - name: Reboot system
       become: true
-      ansible.builtin.command: reboot
+      ansible.builtin.reboot:
   tasks:
     - name: Istall the latest version of git
       become: true
@@ -161,5 +156,10 @@
       ansible.builtin.shell: | 
         firewall-cmd --zone=public --permanent --add-service=http 
         firewall-cmd --reload
-      notify: Start nginx
+    - name: Set autoboot nginx
+      become: true
+      ansible.builtin.systemd:
+        name: nginx
+        enabled: true
+      notify: Reboot system
 
