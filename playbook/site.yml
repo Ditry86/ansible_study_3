@@ -50,6 +50,27 @@
     - name: Create table
       ansible.builtin.command: clickhouse-client -q "CREATE TABLE IF NOT EXISTS logs.test_logs (file String, host String, message String, source_type String, timestamp DateTime64) ENGINE = TinyLog;"
       changed_when: false
+    - name: Disable SELinux
+      become: true
+      ansible.builtin.lineinfile:
+        path: /etc/selinux/config
+        search_string: 'SELINUX=enforcing'
+        line: 'SELINUX=disabled'
+    - name: Install CentOS firewalld
+      become: true
+      ansible.builtin.yum:
+        name: firewalld
+    - name: Enable firewalld service [on clickhouse]
+      become: true
+      ansible.builtin.systemd:
+        name: firewalld
+        enabled: true
+        state: started
+    - name: Open 8123 clickhouse port
+      become: true
+      ansible.builtin.shell: | 
+        firewall-cmd --zone=public --permanent --add-port=8123/tcp --add-service=http 
+        firewall-cmd --reload
 - name: Install Vector
   hosts: vector
   handlers:
@@ -143,13 +164,11 @@
       become: true
       ansible.builtin.yum:
         name: firewalld
-    - name: Enable firewalld service
+    - name: Enable firewalld service [on lighthouse]
       become: true
-      ansible.builtin.command: systemctl enable firewalld
-    - name: Start firewalld service
-      become: true
-      ansible.builtin.service:
+      ansible.builtin.systemd:
         name: firewalld
+        enabled: true
         state: started
     - name: Open http port
       become: true
@@ -162,4 +181,3 @@
         name: nginx
         enabled: true
       notify: Reboot system
-
