@@ -1,6 +1,6 @@
 ---
-vector_version: 0.27.0
-vector_config_dir: "{{ ansible_user_dir }}/vector_config"
+vector_version: 0.28.1
+vector_config_dir: "/etc/vector"
 clickhouse_user: loger
 clickhouse_password: loger
 dest_host: "{{ lookup('env','CLICKHOUSE_IP') | ansible.utils.ipv4 }}"
