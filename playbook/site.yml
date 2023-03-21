@@ -10,14 +10,15 @@
       become: true
       ansible.builtin.lineinfile:
         path: /etc/selinux/config
-        search_string: 'SELINUX=enforcing'
-        line: 'SELINUX=disabled'
+        state: present
+        search_string: "SELINUX=enforcing"
+        line: "SELINUX=disabled"
     - name: Install CentOS firewalld
       become: true
       ansible.builtin.yum:
         name: firewalld
         state: latest
-    - name: Enable firewalld service [on clickhouse]
+    - name: Enable firewalld service
       become: true
       ansible.builtin.systemd:
         name: firewalld
@@ -117,6 +118,7 @@
         mode: 0644
         dest: "{{ vector_config_dir }}/vector.yml"
     - name: Delete default vector config file (toml)
+      become: true
       ansible.builtin.file:
         path: "{{ vector_config_dir }}/vector.toml"
         state: absent
@@ -172,22 +174,6 @@
         repo: "{{ lighthouse_source_url }}"
         dest: /data/www
         version: master
-    - name: Disable SELinux
-      become: true
-      ansible.builtin.lineinfile:
-        path: /etc/selinux/config
-        search_string: 'SELINUX=enforcing'
-        line: 'SELINUX=disabled'
-    - name: Install CentOS firewall
-      become: true
-      ansible.builtin.yum:
-        name: firewalld
-    - name: Enable firewalld service [on lighthouse]
-      become: true
-      ansible.builtin.systemd:
-        name: firewalld
-        enabled: true
-        state: started
     - name: Open http port
       become: true
       ansible.builtin.shell: | 

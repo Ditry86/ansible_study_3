@@ -19,6 +19,6 @@ resource "yandex_compute_instance" "netology_ansible_03" {
   }
 
   metadata = {
-    ssh-keys = "centos:${file("~/.ssh/id_ed25519.pub")}"
+    ssh-keys = "ubuntu:${file("~/.ssh/id_ed25519.pub")}"
   }
 }
