@@ -117,11 +117,19 @@
         src: vector.yml.j2
         mode: 0644
         dest: "{{ vector_config_dir }}/vector.yml"
-    - name: Delete default vector config file (toml)
+    - name: Enable vector service
       become: true
-      ansible.builtin.file:
-        path: "{{ vector_config_dir }}/vector.toml"
-        state: absent
+      ansible.builtin.service:
+        name: vector
+        enabled: true
+    - name: Change systemd vector.service (start with required config)
+      become: true
+      ansible.builtin.replace:
+        path: /etc/systemd/system/multi-user.target.wants/vector.service
+        regexp: '[$]'
+        after: "^(usr/bin/vector)[/s]*[a-z]*"
+        #before: "$"
+        replace: "--config-yaml={{ vector_config_dir }}/vector.yml"
     - name: Create source log file
       become: true
       ansible.builtin.file:
