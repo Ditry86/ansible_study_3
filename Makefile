@@ -1,10 +1,14 @@
 SHELL:=/usr/bin/env bash
+
 prepare: cloud init
+cloud: 
+vm: plan apply
+deploy: 
 
-start: plan apply
+install:
+	source ./install_env.sh
 
-
-cloud:
+init_cloud:
 	source ./init_cloud.sh
 
 env:

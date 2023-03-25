@@ -1,0 +1,5 @@
+#[[ $(cat ~/.bashrc | grep yandex-cload) -ne 0 ]] && echo "net" || echo "da"
+if [[ $(whereis yc | grep '^yc:$') != "" ]]
+then echo "net"
+else echo
+fi
