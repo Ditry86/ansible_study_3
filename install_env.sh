@@ -1,23 +1,58 @@
 #!/usr/bin/env bash
-tf=0
-yc=0
-which terraform
-[[ tf==1 ]] && echo $tf
-[[ $(which yc) != 0 ]] && yc=1 && echo $yc
-#[[ $tf==1 || yc==1 ]] && [ "$UID" != 0 ] && exec sudo -- "$0" "$@"
-mkdir ~/tmp/
-cd ~/tmp/
-#Install terraform
-if [[ $tf==1 ]]; then sta
-    echo $'\n'Install Terraform...$'\n'===========================================$'\n'
-    #curl -L -o terraform.zip https://hashicorp-releases.yandexcloud.net/terraform/1.4.2/terraform_1.4.2_linux_amd64.zip
-    #sudo unzip terraform.zip -d /usr/local/bin
-fi
+
+#Check installed utils
+which terraform > /dev/null
+tf=$?
+which yc > /dev/null
+yc=$?
+which python3 > /dev/null
+py=$?
+which ansible > /dev/null
+an=$?
+passwd='' 
+#Promt sudo password
+if [[ $tf != 0 ]] || [[ $py != 0 ]] || [[ $an != 0 ]] 
+then
+    echo Type your sudo password:' '
+    read -s $passwd
+    mkdir ~/tmp
+    cd ~/tmp
+elif [ $yc != 0 ]; then
 #Install yc
-if [[ $yc==1 ]]; then 
-    echo $'\n'Install Yandex CLI...$'\n'===========================================$'\n'
-    #curl https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash -s -- -a
+    echo $'\n'Installed Yandex CLI...$'\n'==============================================================$'\n'
+    curl -L https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash -s -a
+    bash -c source "/home/$USER/.bashrc"
+    echo --------------------------------------------------------------$'\n'Done!$'\n'
+else
+    echo $'\n'Nothing needs to do$'\n'
 fi
-[[ $(which python3) == 0 ]] && py_vers=$(python3 -V | egrep -o '[0-9]{2}') || py_vers="old"
-echo $py_vers
-rm -rf ~/tmp
+#Install terraform from yandex mirror
+if  [ $tf != 0 ]; then
+    echo $'\n'Installed Terraform...$'\n'==============================================================$'\n'
+    curl -L https://hashicorp-releases.yandexcloud.net/terraform/1.4.2/terraform_1.4.2_linux_amd64.zip > terraform.zip
+    echo passwd | sudo unzip -d /usr/local/bin terraform.zip
+    echo --------------------------------------------------------------$'\n'Done!$'\n'
+fi
+#Install python3
+if  [ $py != 0 ]; then
+    echo $'\n'Installed Python3...$'\n'==============================================================$'\n'
+    distro=$(cat /etc/os-release | grep ^ID= | sed -e 's/ID=["]*//;s/["]*$//')
+    case $distro in
+        ubuntu)
+            echo $passwd | sudo apt install -y python3 python3-dev
+            ;;
+        centos)
+            echo $passwd | sudo yum install -y python3 python3-devel
+            ;;
+    esac
+    echo --------------------------------------------------------------$'\n'Done!$'\n'
+fi
+#Install ansible 
+if  [ $an != 0 ]; then
+    echo $'\n'Installed Ansible '(by using pip)'...$'\n'==============================================================$'\n'
+    python3 -m pip install --upgrade pip
+    python3 -m pip install --upgrade --user ansible
+    python3 -m pip install --user netaddr
+    echo --------------------------------------------------------------$'\n'Done!$'\n'
+fi
+[ -d "$HOME/tmp" ] && rm -r "$HOME/tmp" 
