@@ -1,30 +1,31 @@
 SHELL:=/usr/bin/env bash
 
-prepare: cloud init
-cloud: 
-vm: plan apply
+prepare: install env init_yc
+cloud: cloud init_tf
+vms: plan apply
 deploy: 
 
 install:
-	source ./install_env.sh
-
-init_cloud:
+	source ./init_env.sh && source ./install_env.sh
+init_yc: 
+	source ./init_env.sh && yc init --token ${YC_TOKEN}
+cloud:
 	source ./init_cloud.sh
 
 env:
-	source ./reinit_env.sh
+	source ./init_env.sh
 
-init:
-	source ./reinit_env.sh && cd ./terraform && terraform init 
+init_tf:
+	source ./init_env.sh && cd ./terraform && terraform init 
 
 plan: 
-	source ./reinit_env.sh && cd ./terraform && terraform plan -out=terraform.tfplan
+	source ./init_env.sh && cd ./terraform && terraform plan -out=terraform.tfplan
 
 apply: 
-	source ./reinit_env.sh && cd ./terraform && terraform apply -auto-approve
+	source ./init_env.sh && cd ./terraform && terraform apply -auto-approve
 
 destroy: 
-	source ./reinit_env.sh && source ./destroy.sh
+	source ./init_env.sh && source ./destroy.sh
 
 get_ip:
 	source ./get_ext_ip.sh

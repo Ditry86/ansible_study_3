@@ -21,7 +21,6 @@ elif [ $yc != 0 ]; then
 #Install yc
     echo $'\n'Installed Yandex CLI...$'\n'==============================================================$'\n'
     curl -L https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash -s -a
-    bash -c source "/home/$USER/.bashrc"
     echo --------------------------------------------------------------$'\n'Done!$'\n'
 else
     echo $'\n'Nothing needs to do$'\n'
