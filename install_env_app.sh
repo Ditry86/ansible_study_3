@@ -10,6 +10,7 @@ py=$?
 which ansible > /dev/null
 an=$?
 passwd='' 
+distro=$(cat /etc/os-release | grep ^ID= | sed -e 's/ID=["]*//;s/["]*$//')
 #Promt sudo password
 if [[ $tf != 0 ]] || [[ $py != 0 ]] || [[ $an != 0 ]] 
 then
@@ -17,11 +18,12 @@ then
     read -s $passwd
     mkdir ~/tmp
     cd ~/tmp
-elif [ $yc != 0 ]; then
+    if [ $yc != 0 ]; then
 #Install yc
-    echo $'\n'Installed Yandex CLI...$'\n'==============================================================$'\n'
-    curl -L https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash -s -a
-    echo --------------------------------------------------------------$'\n'Done!$'\n'
+        echo $'\n'Installed Yandex CLI...$'\n'==============================================================$'\n'
+        curl -L https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash -s -a
+        exec /usr/bin/bash
+        echo --------------------------------------------------------------$'\n'Done!$'\n'
 else
     echo $'\n'Nothing needs to do$'\n'
 fi
@@ -35,7 +37,6 @@ fi
 #Install python3
 if  [ $py != 0 ]; then
     echo $'\n'Installed Python3...$'\n'==============================================================$'\n'
-    distro=$(cat /etc/os-release | grep ^ID= | sed -e 's/ID=["]*//;s/["]*$//')
     case $distro in
         ubuntu)
             echo $passwd | sudo apt install -y python3 python3-dev
@@ -52,6 +53,7 @@ if  [ $an != 0 ]; then
     python3 -m pip install --upgrade pip
     python3 -m pip install --upgrade --user ansible
     python3 -m pip install --user netaddr
+    echo 'source export PATH=$PATH:~/.local/bin' >> ~/.bashrc
     echo --------------------------------------------------------------$'\n'Done!$'\n'
 fi
-[ -d "$HOME/tmp" ] && rm -r "$HOME/tmp" 
+[ -d "$HOME/tmp" ] && rm -rf "$HOME/tmp" 
