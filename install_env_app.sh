@@ -24,6 +24,7 @@ then
         curl -L https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash -s -a
         exec /usr/bin/bash
         echo --------------------------------------------------------------$'\n'Done!$'\n'
+    fi
 else
     echo $'\n'Nothing needs to do$'\n'
 fi
