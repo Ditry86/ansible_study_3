@@ -6,9 +6,11 @@ vms: plan apply
 deploy: 
 
 install:
-	source ./init_env.sh && source ./install_env.sh
+	source ./init_env_var.sh && source ./install_env_app.sh
+	
 init_yc: 
 	source ./init_env.sh && yc init --token ${YC_TOKEN}
+	
 cloud:
 	source ./init_cloud.sh
 
