@@ -9,6 +9,7 @@ which python3 > /dev/null
 py=$?
 which ansible > /dev/null
 an=$?
+sur_dir=$(pwd)
 passwd='' 
 distro=$(cat /etc/os-release | grep ^ID= | sed -e 's/ID=["]*//;s/["]*$//')
 #Promt sudo password
@@ -17,17 +18,17 @@ then
     echo Type your sudo password:' '
     read -s $passwd
     mkdir ~/tmp
-    cd ~/tmp
-    if [ $yc != 0 ]; then
+    cd ~/tmp 
+else
+    [$yc == 0] && echo $'\n'Nothing needs to do$'\n'
+fi
+if [ $yc != 0 ]; then
 #Install yc
         echo $'\n'Installed Yandex CLI...$'\n'==============================================================$'\n'
         curl -L https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash -s -a
         exec /usr/bin/bash
         echo --------------------------------------------------------------$'\n'Done!$'\n'
     fi
-else
-    echo $'\n'Nothing needs to do$'\n'
-fi
 #Install terraform from yandex mirror
 if  [ $tf != 0 ]; then
     echo $'\n'Installed Terraform...$'\n'==============================================================$'\n'
@@ -54,7 +55,9 @@ if  [ $an != 0 ]; then
     python3 -m pip install --upgrade pip
     python3 -m pip install --upgrade --user ansible
     python3 -m pip install --user netaddr
-    echo 'source export PATH=$PATH:~/.local/bin' >> ~/.bashrc
+    echo 'export PATH=$PATH:~/.local/bin' >> ~/.bashrc
+    source '~/.bashrc'
     echo --------------------------------------------------------------$'\n'Done!$'\n'
 fi
+cd $cur_dir
 [ -d "$HOME/tmp" ] && rm -rf "$HOME/tmp" 
