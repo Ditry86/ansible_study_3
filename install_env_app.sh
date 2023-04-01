@@ -9,7 +9,7 @@ which python3 > /dev/null
 py=$?
 which ansible > /dev/null
 an=$?
-sur_dir=$(pwd)
+cur_dir=$(pwd)
 passwd='' 
 distro=$(cat /etc/os-release | grep ^ID= | sed -e 's/ID=["]*//;s/["]*$//')
 #Promt sudo password
@@ -31,6 +31,9 @@ if [ $yc != 0 ]; then
 #Install terraform from yandex mirror
 if  [ $tf != 0 ]; then
     echo $'\n'Installed Terraform...$'\n'==============================================================$'\n'
+    if [[ distro == 'centos' ]]; then
+         echo $passwd | yum install -y unzip
+    fi
     curl -L https://hashicorp-releases.yandexcloud.net/terraform/1.4.2/terraform_1.4.2_linux_amd64.zip > terraform.zip
     echo passwd | sudo unzip -d /usr/local/bin terraform.zip
     echo --------------------------------------------------------------$'\n'Done!$'\n'
@@ -51,9 +54,9 @@ fi
 #Install ansible 
 if  [ $an != 0 ]; then
     echo $'\n'Installed Ansible '(by using pip)'...$'\n'==============================================================$'\n'
-    python3 -m pip install --upgrade pip
+    echo $passwd | sudo python3 -m pip install --upgrade pip
+    echo $passwd | sudo python3 -m pip install --user netaddr
     python3 -m pip install --upgrade --user ansible
-    python3 -m pip install --user netaddr
     echo 'export PATH=$PATH:~/.local/bin' >> ~/.bashrc
     source '~/.bashrc'
     echo --------------------------------------------------------------$'\n'Done!$'\n'
