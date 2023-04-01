@@ -20,7 +20,7 @@ then
     mkdir ~/tmp
     cd ~/tmp 
 else
-    [$yc == 0] && echo $'\n'Nothing needs to do$'\n'
+    [ $yc == 0 ] && echo $'\n'Nothing needs to do$'\n'
 fi
 if [ $yc != 0 ]; then
 #Install yc
@@ -31,7 +31,7 @@ if [ $yc != 0 ]; then
 #Install terraform from yandex mirror
 if  [ $tf != 0 ]; then
     echo $'\n'Installed Terraform...$'\n'==============================================================$'\n'
-    if [[ distro == 'centos' ]]; then
+    if [ "$distro" == "centos" ]; then
          echo $passwd | yum install -y unzip
     fi
     curl -L https://hashicorp-releases.yandexcloud.net/terraform/1.4.2/terraform_1.4.2_linux_amd64.zip > terraform.zip
