@@ -63,4 +63,4 @@ if  [ $an != 0 ]; then
 fi
 cd $cur_dir
 [ -d "$HOME/tmp" ] && rm -rf "$HOME/tmp" 
-exec $SHELL
+exec /usr/bin/bash
