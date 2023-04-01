@@ -26,7 +26,6 @@ if [ $yc != 0 ]; then
 #Install yc
         echo $'\n'Installed Yandex CLI...$'\n'==============================================================$'\n'
         curl -L https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash -s -a
-        exec /usr/bin/bash
         echo --------------------------------------------------------------$'\n'Done!$'\n'
     fi
 #Install terraform from yandex mirror
@@ -61,3 +60,4 @@ if  [ $an != 0 ]; then
 fi
 cd $cur_dir
 [ -d "$HOME/tmp" ] && rm -rf "$HOME/tmp" 
+exec $SHELL
