@@ -31,6 +31,7 @@ if [ $yc != 0 ]; then
 #Install terraform from yandex mirror
 if  [ $tf != 0 ]; then
     echo $'\n'Installed Terraform...$'\n'==============================================================$'\n'
+    echo $'\n'Installed unzip...$'\n'==============================================================$'\n'
     case $distro in
         ubuntu)
             echo $passwd | sudo apt install -y unzip
