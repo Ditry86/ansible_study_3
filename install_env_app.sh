@@ -31,7 +31,15 @@ if [ $yc != 0 ]; then
 #Install terraform from yandex mirror
 if  [ $tf != 0 ]; then
     echo $'\n'Installed Terraform...$'\n'==============================================================$'\n'
-    yum install -y unzip
+    case $distro in
+        ubuntu)
+            echo $passwd | sudo apt install -y unzip
+            ;;
+        centos)
+            echo $passwd | sudo yum install -y unzip
+            ;;
+    esac
+    
     curl -L https://hashicorp-releases.yandexcloud.net/terraform/1.4.2/terraform_1.4.2_linux_amd64.zip > terraform.zip
     echo passwd | sudo unzip -d /usr/local/bin terraform.zip
     echo --------------------------------------------------------------$'\n'Done!$'\n'
