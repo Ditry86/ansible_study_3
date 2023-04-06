@@ -17,12 +17,7 @@ if [[ $tf != 0 ]] || [[ $py != 0 ]] || [[ $an != 0 ]]
 then
     echo Type your sudo password:' '
     read -s $passwd
-    mkdir ~/tmp
-    cd ~/tmp 
-else
-    [ $yc == 0 ] && echo $'\n'Nothing needs to do$'\n'
-fi
-case $distro in
+    case $distro in
         ubuntu | Ubuntu )
             echo $passwd | sudo apt update && sudo apt upgrade -y
             ;;
@@ -30,6 +25,12 @@ case $distro in
             echo $passwd | sudo yum update && sudo yum upgrade -y
             ;;
     esac
+    mkdir ~/tmp
+    cd ~/tmp 
+else
+    [ $yc == 0 ] && echo $'\n'Nothing needs to do$'\n'
+fi
+
 if [ $yc != 0 ]; then
 #Install yc
         echo $'\n'Installed Yandex CLI...$'\n'==============================================================$'\n'
