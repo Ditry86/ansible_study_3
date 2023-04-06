@@ -32,14 +32,13 @@ if [ $yc != 0 ]; then
 if  [ $tf != 0 ]; then
     echo $'\n'Installed Terraform...$'\n'==============================================================$'\n'
     case $distro in
-        #ubuntu)
-         #   echo $passwd | sudo apt install -y unzip
-          #  ;;
-        centos)
+        ubuntu | Ubuntu )
+            echo $passwd | sudo apt install -y unzip
+            ;;
+        centos | Centos | CentOs | CentOS)
             echo $passwd | sudo yum install -y unzip
             ;;
     esac
-    
     curl -L -k https://hashicorp-releases.yandexcloud.net/terraform/1.4.2/terraform_1.4.2_linux_amd64.zip > terraform.zip
     echo passwd | sudo unzip -d /usr/local/bin terraform.zip
     echo --------------------------------------------------------------$'\n'Done!$'\n'
@@ -48,10 +47,10 @@ fi
 if  [ $py != 0 ]; then
     echo $'\n'Installed Python3...$'\n'==============================================================$'\n'
     case $distro in
-        ubuntu)
+        ubuntu | Ubuntu )
             echo $passwd | sudo apt install -y python3 python3-dev
             ;;
-        centos)
+        centos | Centos | CentOs | CentOS)
             echo $passwd | sudo yum install -y python3 python3-devel
             ;;
     esac
@@ -60,6 +59,10 @@ fi
 #Install ansible 
 if  [ $an != 0 ]; then
     echo $'\n'Installed Ansible '(by using pip)'...$'\n'==============================================================$'\n'
+    which pip3 > /dev/null
+    if [ "$distro" == "ubuntu" ] || [ "$distro" == "Ubuntu" ]; then
+        echo $passwd | sudo apt install python3-pip
+    fi
     echo $passwd | sudo python3 -m pip install --upgrade pip
     echo $passwd | sudo python3 -m pip install --user netaddr
     python3 -m pip install --upgrade --user ansible
