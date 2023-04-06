@@ -22,6 +22,14 @@ then
 else
     [ $yc == 0 ] && echo $'\n'Nothing needs to do$'\n'
 fi
+case $distro in
+        ubuntu | Ubuntu )
+            echo $passwd | sudo apt update && sudo apt upgrade -y
+            ;;
+        centos | Centos | CentOs | CentOS)
+            echo $passwd | sudo yum update && sudo yum upgrade -y
+            ;;
+    esac
 if [ $yc != 0 ]; then
 #Install yc
         echo $'\n'Installed Yandex CLI...$'\n'==============================================================$'\n'
