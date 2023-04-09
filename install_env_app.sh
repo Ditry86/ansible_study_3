@@ -25,7 +25,7 @@ then
             echo $passwd | sudo yum update && sudo yum upgrade -y
             ;;
     esac
-    mkdir ~/tmp
+    mkdir $cur_dir/tmp
     cd ~/tmp 
 else
     [ $yc == 0 ] && echo $'\n'Nothing needs to do$'\n'
@@ -80,5 +80,4 @@ if  [ $an != 0 ]; then
     echo --------------------------------------------------------------$'\n'Done!$'\n'
 fi
 cd $cur_dir
-[ -d "$HOME/tmp" ] && rm -rf "$HOME/tmp" 
-exec /usr/bin/bash
+[ -d "$cur_dir/tmp" ] && sudo rm -rf "$cur_dir/tmp"
