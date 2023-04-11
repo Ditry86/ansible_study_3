@@ -75,7 +75,7 @@ if  [ $an != 0 ]; then
     echo $passwd | sudo python3 -m pip install --upgrade pip
     echo $passwd | sudo python3 -m pip install --user netaddr
     python3 -m pip install --upgrade --user ansible
-    echo 'export PATH=$PATH:~/.local/bin' >> ~/.bashrc
+    echo $passwd | sudo echo 'export PATH=$PATH:~/.local/bin' >> ~/.bashrc
     source '~/.bashrc'
     echo --------------------------------------------------------------$'\n'Done!$'\n'
 fi
