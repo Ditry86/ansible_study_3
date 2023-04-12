@@ -28,7 +28,7 @@ then
     mkdir $cur_dir/tmp
     cd ~/tmp 
 else
-    [ $yc == 0 ] && echo $'\n'Nothing needs to do$'\n'
+    [ $yc == 0 ] && echo --------------------------------------------------------------$'\n'Nothing needs to do$'\n'
 fi
 
 if [ $yc != 0 ]; then
@@ -77,9 +77,7 @@ if  [ $an != 0 ]; then
     python3 -m pip install --upgrade --user ansible
     echo $HOME
     echo $passwd | sudo echo 'export PATH=$PATH:~/.local/bin' >> ~/.bashrc
-    source ~/.bashrc
     echo --------------------------------------------------------------$'\n'Done!$'\n'
 fi
 cd $cur_dir
-[ -d "$cur_dir/tmp" ] && sudo rm -rf "$cur_dir/tmp"
-source ~/.bashrc
+[ -d "$cur_dir/tmp" ] && sudo rm -rf "$cur_dir/tmp" || echo $'\n'$cur_dir/tmp is not exist$'\n'
