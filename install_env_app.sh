@@ -82,6 +82,4 @@ if  [ $an != 0 ]; then
 fi
 cd $cur_dir
 [ -d "$cur_dir/tmp" ] && sudo rm -rf "$cur_dir/tmp"
-cur_bash_id=$$
-exec /usr/bin/bash
-kill -9 $cur_bash_id
+source ~/.bashrc

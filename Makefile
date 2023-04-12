@@ -5,7 +5,7 @@ cloud: cloud init_tf
 vms: plan apply
 
 install:
-	source install_env_app.sh && source ~/.bashrc
+	source install_env_app.sh 
 
 env-var: 
 	source init_env_var.sh
