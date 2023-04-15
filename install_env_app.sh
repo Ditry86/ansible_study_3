@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-#Check installed utils
+#Check required apps 
+echo $'\n'#Check required apps 
+echo $'\n'==============================================================$'\n'
 which terraform > /dev/null
 tf=$?
 which yc > /dev/null
@@ -12,25 +14,25 @@ an=$?
 cur_dir=$(pwd)
 passwd='' 
 distro=$(cat /etc/os-release | grep ^ID= | sed -e 's/ID=["]*//;s/["]*$//')
-#Promt sudo password
+#Promt sudo password (if needed)
 if [[ $tf != 0 ]] || [[ $py != 0 ]] || [[ $an != 0 ]] 
 then
     echo Type your sudo password:' '
     read -s $passwd
     case $distro in
         ubuntu | Ubuntu )
-            echo apt update and upgrade...$'\n'
+            echo $'\n'apt cache update and upgrade packets...$'\n'
             echo $passwd | sudo apt update > /dev/null && sudo apt upgrade -y > /dev/null
             ;;
         centos | Centos | CentOs | CentOS)
-            echo apt update and upgrade...$'\n'
+            echo $'\n'yum cache update and upgrade packets...$'\n'
             echo $passwd | sudo yum update > /dev/null && sudo yum upgrade -y > /dev/null
             ;;
     esac
     mkdir tmp
     cd tmp 
 else
-    [ $yc == 0 ] && echo --------------------------------------------------------------$'\n'Nothing needs to do$'\n'
+    [ $yc == 0 ] && echo --------------------------------------------------------------$'\n'Nothing needs to do$'\n'--------------------------------------------------------------$'\n'
 fi
 
 if [ $yc != 0 ]; then
@@ -44,12 +46,14 @@ if  [ $tf != 0 ]; then
     echo $'\n'Installed Terraform...$'\n'==============================================================$'\n'
     case $distro in
         ubuntu | Ubuntu )
-            echo Installed unzip...$'\n'
+            echo Installed unzip...$'\b'
             echo $passwd | sudo apt install -y unzip > /dev/null
+            [ $? == 0] && echo Done$'\n'
             ;;
         centos | Centos | CentOs | CentOS)
-            echo Installed unzip...$'\n'
+            echo Installed unzip...$'\b'
             echo $passwd | sudo yum install -y unzip > /dev/null
+            [ $? == 0] && echo Done$'\n'
             ;;
     esac
     curl -L -k https://hashicorp-releases.yandexcloud.net/terraform/1.4.2/terraform_1.4.2_linux_amd64.zip > terraform.zip
@@ -59,26 +63,36 @@ fi
 #Install python3
 if  [ $py != 0 ]; then
     echo $'\n'Installed Python3...$'\n'==============================================================$'\n'
+
     case $distro in
         ubuntu | Ubuntu )
-            echo $passwd | sudo apt install -y python3 python3-dev python3-pip > /dev/null
+            echo $passwd | sudo apt install -y python3
             ;;
         centos | Centos | CentOs | CentOS)
-            echo $passwd | sudo yum install -y epel-release
-            echo $passwd | sudo yum install -y python3 python3-devel python3-pip > /dev/null
+            echo $passwd | sudo yum install -y python3
             ;;
     esac
     echo --------------------------------------------------------------$'\n'Done!$'\n'
 fi
+#Instal python3 dep packages
+case $distro in
+        ubuntu | Ubuntu )
+            echo $passwd | sudo apt install -y python3 python3-dev python3-pip 
+            ;;
+        centos | Centos | CentOs | CentOS)
+            echo $passwd | sudo yum install -y epel-release
+            echo $passwd | sudo yum install -y python3 python3-devel python3-pip 
+            ;;
+    esac
 #Install ansible 
 if  [ $an != 0 ]; then
     echo $'\n'Installed Ansible '(by using pip)'...$'\n'==============================================================$'\n'
-    echo $passwd | sudo python3 -m pip install --upgrade pip > /dev/null
-    echo $passwd | sudo python3 -m pip install --user netaddr > /dev/null
-    python3 -m pip install --upgrade --user ansible > /dev/null
-    echo $HOME
+    echo $passwd | sudo python3 -m pip install --upgrade pip 
+    echo $passwd | sudo python3 -m pip install --user netaddr 
+    python3 -m pip install --upgrade --user ansible 
     echo $passwd | sudo echo 'export PATH=$PATH:~/.local/bin' >> ~/.bashrc
     echo --------------------------------------------------------------$'\n'Done!$'\n'
 fi
+echo $cur_dir
 cd $cur_dir
 [ -d "$cur_dir/tmp" ] && sudo rm -rf "$cur_dir/tmp" || echo $'\n'$cur_dir/tmp is not exist$'\n'
