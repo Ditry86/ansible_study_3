@@ -12,11 +12,11 @@ init: cloud tf_init
 deploy: tf_plan tf_apply playbook
 
 install:
-	@source install_env_app.sh
-	@source $(HOME)/.bashrc
+	source install_env_app.sh
+	exec bash
 	
 cloud:
-	@source init_cloud.sh
+	source init_cloud.sh
 	@export YC_TOKEN=$(shell yc iam create-token)
 
 tf_init:	
@@ -45,3 +45,4 @@ get_ip:
 
 playbook:ansible-playbook 
 	cd playbook && ansible-playbook site.yml -i inventory/prod.yml
+echo --------------------------------------------------------------$'\n'Done!$'\n'

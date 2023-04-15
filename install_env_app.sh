@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-
+set -Eeuo pipefail
 #Check required apps 
-echo $'\n'#Check required apps 
-echo $'\n'==============================================================$'\n'
+echo $'\n'Check required apps 
+echo ==============================================================$'\n'
 which terraform > /dev/null
 tf=$?
 which yc > /dev/null
@@ -74,8 +74,11 @@ if  [ $py != 0 ]; then
     esac
     echo --------------------------------------------------------------$'\n'Done!$'\n'
 fi
-#Instal python3 dep packages
-case $distro in
+#Install ansible 
+if  [ $an != 0 ]; then
+    #Instal python3 depends packages
+    echo $'\n'Installed Ansible '(by using pip)'...$'\n'==============================================================$'\n'
+    case $distro in
         ubuntu | Ubuntu )
             echo $passwd | sudo apt install -y python3 python3-dev python3-pip 
             ;;
@@ -84,15 +87,12 @@ case $distro in
             echo $passwd | sudo yum install -y python3 python3-devel python3-pip 
             ;;
     esac
-#Install ansible 
-if  [ $an != 0 ]; then
-    echo $'\n'Installed Ansible '(by using pip)'...$'\n'==============================================================$'\n'
     echo $passwd | sudo python3 -m pip install --upgrade pip 
     echo $passwd | sudo python3 -m pip install --user netaddr 
     python3 -m pip install --upgrade --user ansible 
     echo $passwd | sudo echo 'export PATH=$PATH:~/.local/bin' >> ~/.bashrc
     echo --------------------------------------------------------------$'\n'Done!$'\n'
 fi
-echo $cur_dir
 cd $cur_dir
-[ -d "$cur_dir/tmp" ] && sudo rm -rf "$cur_dir/tmp" || echo $'\n'$cur_dir/tmp is not exist$'\n'
+[ -d "$cur_dir/tmp" ] && $(cd $cur_dir && sudo rm -rf "$cur_dir/tmp") || echo $'\n'$cur_dir/tmp is not exist$'\n'
+echo --------------------------------------------------------------$'\n'Installation completed successfully$'\n'
