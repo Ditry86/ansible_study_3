@@ -96,3 +96,4 @@ fi
 cd $cur_dir
 [ -d "$cur_dir/tmp" ] && $(cd $cur_dir && sudo rm -rf "$cur_dir/tmp") || echo $'\n'$cur_dir/tmp is not exist$'\n'
 echo --------------------------------------------------------------$'\n'Installation completed successfully$'\n'
+
