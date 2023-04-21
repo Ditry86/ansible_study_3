@@ -1,5 +1,11 @@
 SHELL:=/usr/bin/env bash
 
+export YC_OA_TOKEN=$(shell cat init.conf | grep oa_token | sed 's/oa_token = //')
+export YC_CLOUD_ID=$(shell cat init.conf | grep cloud_id | sed 's/cloud_id = //')
+export YC_FOLDER_ID=$(shell cat init.conf | grep folder_id | sed 's/folder_id = //')
+export YC_ACCOUNT=$(shell cat init.conf | grep service_account | sed 's/service_account = //')
+export YC_ZONE=$(shell cat init.conf | grep zone | sed 's/zone = //')
+
 prepare: install cloud tf_init
 init: cloud tf_init
 deploy: tf_plan tf_apply playbook
@@ -9,12 +15,6 @@ install:
 	source ~/.bashrc
 	
 cloud:
-	export YC_OA_TOKEN=$(shell cat init.conf | grep oa_token | sed 's/oa_token = //')
-	export YC_CLOUD_ID=$(shell cat init.conf | grep cloud_id | sed 's/cloud_id = //')
-	export YC_FOLDER_ID=$(shell cat init.conf | grep folder_id | sed 's/folder_id = //')
-	export YC_ACCOUNT=$(shell cat init.conf | grep service_account | sed 's/service_account = //')
-	export YC_ZONE=$(shell cat init.conf | grep zone | sed 's/zone = //')
-	export YC_TOKEN=$(shell yc iam create-token)
 	source init_cloud.sh
 	@export YC_TOKEN=$(shell yc iam create-token)
 
@@ -42,6 +42,6 @@ get_ip:
 	@export VECTOR_IP=$(shell cat init.conf | grep vector | sed 's/\s*"vector" = "//;s/"$//')
 	@export LIGHTHOUSE_IP=$(shell cat init.conf | grep lighthouse | sed 's/\s*"lighthouse" = "//;s/"$//')
 
-playbook:ansible-playbook 
+playbook:
 	cd playbook && ansible-playbook site.yml -i inventory/prod.yml
 echo --------------------------------------------------------------$'\n'Done!$'\n'

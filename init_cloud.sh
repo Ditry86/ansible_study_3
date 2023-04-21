@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
+echo $YC_OA_TOKEN$'\n'
 cur_dir=$(pwd)
 if [ -f "${cur_dir}/key.json" ]; then
     echo The cloud is already initiated and prepared$'\n'
