@@ -27,7 +27,7 @@ tf_plan:
 	@export YC_TOKEN=$(shell yc iam create-token) && cd terraform && terraform plan -out=terraform.tfplan
 
 tf_apply: 
-	@@export YC_TOKEN=$(shell yc iam create-token) && cd terraform && terraform apply -auto-approve terraform.tfplan && ./get_ext_ip.sh
+	@@export YC_TOKEN=$(shell yc iam create-token) && cd terraform && terraform apply -auto-approve terraform.tfplan && ../get_ext_ip.sh
 
 destroy: 
 	@source destroy.sh

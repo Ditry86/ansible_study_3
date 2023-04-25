@@ -2,6 +2,7 @@
 /shelf/
 /workspace.xml
 **/init.conf
+**/commands
 **/key.json
 **/.terraform/
 **/*.tfstate
