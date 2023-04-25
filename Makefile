@@ -14,17 +14,17 @@ install:
 	@source install_env_app.sh
 	
 cloud:
-	@source $(HOME)/.bashrc && source init_cloud.sh
+	@source $(HOME)/.bashrc && ./init_cloud.sh
 
 tf_init:
-	@source tf_provider_mirror.sh	
+	@source ./tf_provider_mirror.sh	
 	@cd terraform && terraform init 
 
 tf_plan: 
 	@export YC_TOKEN=$(shell cat ./token) && cd terraform && terraform plan -out=terraform.tfplan
 
 tf_apply: 
-	@export YC_TOKEN=$(shell cat ./token) && cd terraform && terraform apply -auto-approve terraform.tfplan && ./get_ext_ip.sh
+	@export YC_TOKEN=$(shell cat ./token) && cd terraform && terraform apply -auto-approve terraform.tfplan && source get_ext_ip.sh
 
 destroy: 
 	@source $(HOME)/.bashrc && export YC_TOKEN=$(shell cat ./token) && source destroy.sh

@@ -19,5 +19,5 @@ else
 fi
 yc iam create-token > ./token
 echo Checking ssh key.pub...$'\n'==============================================================$'\n'
-[ -f ./id_ed25519.pub ] && echo Pub key allready exist$'\n' || ssh-keygen -t ed25519 -f ./id_ed25519.pub -N '' -Y > /dev/null
+[ -f ./id_ed25519.pub ] && echo Pub key allready exist$'\n' || ssh-keygen -t ed25519 -f ./id_ed25519.pub -N '' > /dev/null
 
