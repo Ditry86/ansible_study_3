@@ -20,6 +20,7 @@ if [[ $tf != 0 ]] || [[ $py != 0 ]] || [[ $an != 0 ]]
 then
     echo Type your sudo password:' '
     read -s $passwd
+    case $distro in
         ubuntu | Ubuntu )
             echo $'\n'apt cache update and upgrade packets...$'\n'
             echo $passwd | sudo apt update > /dev/null && sudo apt upgrade -y > /dev/null

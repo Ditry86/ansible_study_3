@@ -6,13 +6,13 @@ export YC_FOLDER_ID=$(shell cat init.conf | grep folder_id | sed 's/folder_id = 
 export YC_ACCOUNT=$(shell cat init.conf | grep service_account | sed 's/service_account = //')
 export YC_ZONE=$(shell cat init.conf | grep zone | sed 's/zone = //')
 
-prepare: install cloud tf_init
+prepare: cloud tf_init
 init: cloud tf_init
 deploy: tf_plan tf_apply playbook
 
 install:
 	source install_env_app.sh
-	source ~/.bashrc
+	source $(HOME)/.bashrc
 	
 cloud:
 	source init_cloud.sh
