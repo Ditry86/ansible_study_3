@@ -83,7 +83,7 @@ if [ $stop == 0 ]; then
             ubuntu | Ubuntu )
                 echo $passwd | sudo apt install -y python3 python3-dev python3-pip 
                 ;;
-            centos | Centos | CentOs | CentOS)
+            centos | Centos | CentOs | CentOS )
                 echo $passwd | sudo yum install -y epel-release
                 echo $passwd | sudo yum install -y python3 python3-devel python3-pip 
                 ;;
@@ -98,4 +98,3 @@ if [ $stop == 0 ]; then
     [ -d "$cur_dir/tmp" ] && $(cd $cur_dir && sudo rm -rf "$cur_dir/tmp") || echo $'\n'$cur_dir/tmp is not exist$'\n'
     echo --------------------------------------------------------------$'\n'Installation completed successfully$'\n'
 fi
-

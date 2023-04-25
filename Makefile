@@ -44,4 +44,4 @@ get_ip:
 
 playbook:
 	cd playbook && ansible-playbook site.yml -i inventory/prod.yml
-echo --------------------------------------------------------------$'\n'Done!$'\n'
+	echo --------------------------------------------------------------$'\n'Done!$'\n'
