@@ -17,20 +17,19 @@ install:
 cloud:
 	@source $(HOME)/.bashrc
 	@source init_cloud.sh
-	@export YC_TOKEN=$(shell yc iam create-token)
 
 tf_init:
 	@source tf_provider_mirror.sh	
 	@cd terraform && terraform init 
 
 tf_plan: 
-	@export YC_TOKEN=$(shell yc iam create-token) && cd terraform && terraform plan -out=terraform.tfplan
+	@export YC_TOKEN=$(shell cat ./token) && cd terraform && terraform plan -out=terraform.tfplan
 
 tf_apply: 
-	@@export YC_TOKEN=$(shell yc iam create-token) && cd terraform && terraform apply -auto-approve terraform.tfplan && ../get_ext_ip.sh
+	@export YC_TOKEN=$(shell cat ./token) && cd terraform && terraform apply -auto-approve terraform.tfplan && ./get_ext_ip.sh
 
 destroy: 
-	@source destroy.sh
+	@export YC_TOKEN=$(shell cat ./token) && source destroy.sh
 
 get_ip:
 	@export CLICKHOUSE_IP=$(shell cat ext_ip | grep clickhouse | sed 's/\s*"clickhouse" = "//;s/"$//')
