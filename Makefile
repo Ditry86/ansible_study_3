@@ -12,11 +12,9 @@ deploy: tf_plan tf_apply
 
 install:
 	@source install_env_app.sh
-	@source $(HOME)/.bashrc
 	
 cloud:
-	@source $(HOME)/.bashrc
-	@source init_cloud.sh
+	@source $(HOME)/.bashrc && source init_cloud.sh
 
 tf_init:
 	@source tf_provider_mirror.sh	
@@ -29,7 +27,7 @@ tf_apply:
 	@export YC_TOKEN=$(shell cat ./token) && cd terraform && terraform apply -auto-approve terraform.tfplan && ./get_ext_ip.sh
 
 destroy: 
-	@export YC_TOKEN=$(shell cat ./token) && source destroy.sh
+	@source $(HOME)/.bashrc && export YC_TOKEN=$(shell cat ./token) && source destroy.sh
 
 get_ip:
 	@export CLICKHOUSE_IP=$(shell cat ext_ip | grep clickhouse | sed 's/\s*"clickhouse" = "//;s/"$//')
