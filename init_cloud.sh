@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -Eeuo pipefail
+set -Euo pipefail
 
 echo $YC_OA_TOKEN$'\n'
 cur_dir=$(pwd)

@@ -6,6 +6,11 @@ terraform {
   }
   required_version = ">= 0.13"
 }
+
+provider "yandex" {
+  zone = var.zone
+}
+
 data "yandex_compute_image" "centos7" {
   family = "centos-7"
 }

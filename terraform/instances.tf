@@ -2,6 +2,7 @@ resource "yandex_compute_instance" "netology_ansible_03" {
   for_each = local.instances
   name = "${each.key}-01"
   platform_id = each.value.platform
+  zone=var.zone
   resources {
     cores  = each.value.cores
     memory = each.value.memory
@@ -19,6 +20,6 @@ resource "yandex_compute_instance" "netology_ansible_03" {
   }
 
   metadata = {
-    ssh-keys = "ubuntu:${file("~/.ssh/id_ed25519.pub")}"
+    ssh-keys = "centos:${file("../id_ed25519.pub")}"
   }
 }

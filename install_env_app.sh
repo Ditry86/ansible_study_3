@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
-set -Eeuo pipefail
+set -Euo pipefail
 #Check required apps 
 echo $'\n'Check required apps 
 echo ==============================================================$'\n'
-which terraform > /dev/null
+which terraform &> /dev/null
 tf=$?
-which yc > /dev/null
+which yc &> /dev/null
 yc=$?
-which python3 > /dev/null
+which python3 &> /dev/null
 py=$?
-which ansible > /dev/null
+which ansible &> /dev/null
 an=$?
 cur_dir=$(pwd)
 passwd='' 
@@ -25,7 +25,7 @@ then
             echo $'\n'apt cache update and upgrade packets...$'\n'
             echo $passwd | sudo apt update > /dev/null && sudo apt upgrade -y > /dev/null
             ;;
-        centos | Centos | CentOs | CentOS)
+        centos | Centos | CentOs | CentOS )
             echo $'\n'yum cache update and upgrade packets...$'\n'
             echo $passwd | sudo yum update > /dev/null && sudo yum upgrade -y > /dev/null
             ;;
@@ -40,7 +40,7 @@ if [ $stop == 0 ]; then
     if [ $yc != 0 ]; then
     #Install yc
             echo $'\n'Installed Yandex CLI...$'\n'==============================================================$'\n'
-            curl -L https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash -s -a
+            curl -L https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash -s -- -a
             echo --------------------------------------------------------------$'\n'Done!$'\n'
         fi
     #Install terraform from yandex mirror
