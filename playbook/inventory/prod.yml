@@ -4,13 +4,16 @@ clickhouse:
     clickhouse-01:
       ansible_host: "{{ lookup('env','CLICKHOUSE_IP') | ansible.utils.ipv4 }}"
       ansible_user: centos
+      ansible_ssh_private_key_file: "~/.ssh/id_ed25519" 
 vector:
   hosts:
     vector-01:
       ansible_host: "{{ lookup('env','VECTOR_IP') | ansible.utils.ipv4 }}"
       ansible_user: centos
+      ansible_ssh_private_key_file: "~/.ssh/id_ed25519" 
 lighthouse:
   hosts:
     lighthouse-01:
       ansible_host: "{{ lookup('env','LIGHTHOUSE_IP') | ansible.utils.ipv4 }}"
       ansible_user: centos
+      ansible_ssh_private_key_file: "~/.ssh/id_ed25519" 
