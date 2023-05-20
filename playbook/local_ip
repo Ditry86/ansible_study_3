@@ -1,0 +1,4 @@
+
+clickhouse  192.168.10.16
+lighthouse  192.168.10.32
+vector  192.168.10.15

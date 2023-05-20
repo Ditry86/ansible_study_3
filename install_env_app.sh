@@ -11,23 +11,25 @@ which python3 &> /dev/null
 py=$?
 which ansible &> /dev/null
 an=$?
+which curl &> /dev/null
+cu=$?
 cur_dir=$(pwd)
 passwd='' 
 distro=$(cat /etc/os-release | grep ^ID= | sed -e 's/ID=["]*//;s/["]*$//')
 stop=0
 #Promt sudo password (if needed)
-if [[ $tf != 0 ]] || [[ $py != 0 ]] || [[ $an != 0 ]] 
+if [[ $tf != 0 ]] || [[ $py != 0 ]] || [[ $an != 0 ]] || [[ $cu != 0 ]]
 then
     echo Type your sudo password:' '
     read -s $passwd
     case $distro in
         ubuntu | Ubuntu )
             echo $'\n'apt cache update and upgrade packets...$'\n'
-            echo $passwd | sudo apt update > /dev/null && sudo apt upgrade -y > /dev/null
+            echo $passwd | sudo apt upgrade -y > /dev/null 
             ;;
         centos | Centos | CentOs | CentOS )
             echo $'\n'yum cache update and upgrade packets...$'\n'
-            echo $passwd | sudo yum update > /dev/null && sudo yum upgrade -y > /dev/null
+            echo $passwd | sudo yum upgrade -y > /dev/null 
             ;;
     esac
     mkdir tmp
@@ -37,12 +39,16 @@ else
     [ $yc == 0 ] && echo --------------------------------------------------------------$'\n'Nothing needs to do$'\n'--------------------------------------------------------------$'\n'
 fi
 if [ $stop == 0 ]; then
+    if [ $cu != 0 ]; then
+        echo $passwd | sudo apt install -y curl > /dev/null
+                [ $? == 0] && echo Done$'\n'
+    fi
     if [ $yc != 0 ]; then
     #Install yc
-            echo $'\n'Installed Yandex CLI...$'\n'==============================================================$'\n'
-            curl -L https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash -s -- -a
-            echo --------------------------------------------------------------$'\n'Done!$'\n'
-        fi
+        echo $'\n'Installed Yandex CLI...$'\n'==============================================================$'\n'
+        curl -L https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash -s -- -a
+        echo --------------------------------------------------------------$'\n'Done!$'\n'
+    fi
     #Install terraform from yandex mirror
     if  [ $tf != 0 ]; then
         echo $'\n'Installed Terraform...$'\n'==============================================================$'\n'
@@ -68,10 +74,11 @@ if [ $stop == 0 ]; then
 
         case $distro in
             ubuntu | Ubuntu )
-                echo $passwd | sudo apt install -y python3
+                echo $passwd | sudo apt install -y python3 python3-dev python3-pip 
                 ;;
             centos | Centos | CentOs | CentOS)
-                echo $passwd | sudo yum install -y python3
+                echo $passwd | sudo yum install -y epel-release
+                echo $passwd | sudo yum install -y python3 python3-dev python3-pip 
                 ;;
         esac
         echo --------------------------------------------------------------$'\n'Done!$'\n'
@@ -82,17 +89,30 @@ if [ $stop == 0 ]; then
         echo $'\n'Installed Ansible '(by using pip)'...$'\n'==============================================================$'\n'
         case $distro in
             ubuntu | Ubuntu )
-                echo $passwd | sudo apt install -y python3 python3-dev python3-pip 
+                echo $passwd | sudo apt install -y ansible
+                
                 ;;
             centos | Centos | CentOs | CentOS )
                 echo $passwd | sudo yum install -y epel-release
-                echo $passwd | sudo yum install -y python3 python3-devel python3-pip 
+                echo $passwd | sudo yum install -y ansible
                 ;;
         esac
+        if [ $(which pip > /dev/null) != 0 ]; then 
+            case $distro in
+                ubuntu | Ubuntu )
+                    echo $passwd | sudo python3 -m pip install --upgrade pip
+                    ;;
+                centos | Centos | CentOs | CentOS )
+                    echo $passwd | sudo python3 -m pip install --upgrade pip
+                    ;;
+            esac
+        fi
         echo $passwd | sudo python3 -m pip install --upgrade pip 
-        echo $passwd | sudo python3 -m pip install --user netaddr 
-        python3 -m pip install --upgrade --user ansible 
-        echo $passwd | sudo echo 'export PATH=$PATH:~/.local/bin' >> ~/.bashrc
+        echo $passwd | sudo python3 -m pip install netaddr 
+        #echo $passwd | sudo python3 -m pip install --upgrade ansible
+        #echo $passwd | sudo echo 'export PATH=$PATH:~/.local/bin' >> ~/.bashrc
+        #echo $passwd | sudo echo 'export PATH=$PATH:/usr/local/bin/ansible' >> ~/.bashrc
+        #echo $passwd | sudo apt install -y ansible
         echo --------------------------------------------------------------$'\n'Done!$'\n'
     fi
     cd $cur_dir

@@ -6,4 +6,4 @@ clickhouse_packages:
   - clickhouse-common-static
 clickhouse_user: loger
 clickhouse_password: loger
-resource_host: "{{ lookup('env','VECTOR_IP') | ansible.utils.ipv4 }}"
+resource_host: "{{ lookup('env','VECTOR_LOCAL_IP') | ansible.utils.ipv4 }}"

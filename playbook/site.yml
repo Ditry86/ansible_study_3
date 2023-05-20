@@ -26,13 +26,13 @@
         state: started
 - name: Install Clickhouse
   hosts: clickhouse
-  #handlers:
-  #  - name: Start clickhouse service
-  #    become: true
-  #    ansible.builtin.service:
-  #      name: clickhouse-server
-  #      state: restarted
-  #    listen: "start clickhouse"
+  handlers:
+    - name: Start clickhouse service
+      become: true
+      ansible.builtin.service:
+        name: clickhouse-server
+        state: restarted
+      listen: "start clickhouse"
   tasks:
     - block:
         - name: Get clickhouse distrib
@@ -54,13 +54,13 @@
           - clickhouse-common-static-{{ clickhouse_version }}.rpm
           - clickhouse-client-{{ clickhouse_version }}.rpm
           - clickhouse-server-{{ clickhouse_version }}.rpm
-    #- name: Set access_mamnagement privileges
-    #  become: true
-    #  ansible.builtin.lineinfile:
-    #    path: /etc/clickhouse-server/users.xml
-    #    search_string: '            <!-- <access_management>1</access_management> -->'
-    #    line: '            <access_management>1</access_management>'
-    #  notify: start clickhouse
+    - name: Set access_mamnagement privileges
+      become: true
+      ansible.builtin.lineinfile:
+        path: /etc/clickhouse-server/users.xml
+        search_string: '            <!-- <access_management>1</access_management> -->'
+        line: '            <access_management>1</access_management>'
+      notify: start clickhouse
     #- name: Flush handlers
     #  ansible.builtin.meta: flush_handlers
     #- name: Wait 5 sec
