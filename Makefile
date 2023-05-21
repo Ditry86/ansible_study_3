@@ -15,7 +15,7 @@ export LIGHTHOUSE_LOCAL_IP=$(shell cat playbook/local_ip 2> /dev/null | grep lig
 
 prepare: cloud tf_init
 deploy: tf_plan tf_apply
-ci: get_ip play help
+ci: get_ip play info
 
 install:
 	@source install_env_app.sh
@@ -43,7 +43,7 @@ play:
 	@source playbook/prepare_ansible.sh
 	@export ANSIBLE_HOST_KEY_CHECKING=False && cd playbook/ && ansible-playbook site.yml -i inventory/prod.yml
 
-help:
+info:
 	@echo Your VM IP adresses:
 	@echo ""
 	@cd terraform && terraform output

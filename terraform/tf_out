@@ -1,10 +1,10 @@
 external_ip_address = {
-  "clickhouse" = "84.201.157.8"
-  "lighthouse" = "84.201.172.156"
-  "vector" = "51.250.75.209"
+  "clickhouse" = "51.250.74.57"
+  "lighthouse" = "51.250.15.81"
+  "vector" = "62.84.112.144"
 }
 local_ip_address = {
-  "clickhouse" = "192.168.10.16"
-  "lighthouse" = "192.168.10.32"
-  "vector" = "192.168.10.15"
+  "clickhouse" = "192.168.10.23"
+  "lighthouse" = "192.168.10.14"
+  "vector" = "192.168.10.13"
 }
