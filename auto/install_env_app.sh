@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -Euo pipefail
 #Check required apps 
-echo $'\n'==============================================================$'\n'
+echo $'\n'==============================================================
 echo Checking required apps 
 echo ==============================================================$'\n'
 which terraform &> /dev/null
@@ -20,7 +20,7 @@ stop=0
 #Promt sudo password (if needed)
 if [[ $tf != 0 ]] || [[ $py != 0 ]] || [[ $an != 0 ]] || [[ $cu != 0 ]]
 then
-    echo Found uninstalled software...$'\n'
+    echo Found uninstalled software...
     echo --------------------------------------------------------------$'\n'
     echo Type your sudo password:$'\n'
     read -s $passwd
@@ -42,9 +42,9 @@ else
 fi
 #Install yc
 if [ $yc != 0 ]; then
-    echo $'\n'==============================================================$'\n'
+    echo $'\n'==============================================================
     echo Install Yandex CLI...
-    echo $'\n'==============================================================$'\n'
+    echo ==============================================================$'\n'
     curl -L https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash -s -- -a
     echo --------------------------------------------------------------$'\n'Done!$'\n'
 fi
@@ -55,9 +55,9 @@ if [ $stop == 0 ]; then
     fi
     #Install terraform from yandex mirror
     if  [ $tf != 0 ]; then
-        echo $'\n'==============================================================$'\n'
+        echo $'\n'==============================================================
         echo Install Terraform...
-        echo $'\n'==============================================================$'\n'
+        echo ==============================================================$'\n'
         case $distro in
             ubuntu | Ubuntu )
                 echo Installed unzip...$'\b'
@@ -76,9 +76,9 @@ if [ $stop == 0 ]; then
     fi
     #Install python3
     if  [ $py != 0 ]; then
-        echo $'\n'==============================================================$'\n'
+        echo $'\n'==============================================================
         echo Install Python3...
-        echo $'\n'==============================================================$'\n'
+        echo ==============================================================$'\n'
 
         case $distro in
             ubuntu | Ubuntu )
@@ -94,9 +94,9 @@ if [ $stop == 0 ]; then
     #Install ansible 
     if  [ $an != 0 ]; then
         #Instal python3 depends packages
-        echo $'\n'==============================================================$'\n'
+        echo $'\n'==============================================================
         echo Install Ansible...
-        echo $'\n'==============================================================$'\n'
+        echo ==============================================================$'\n'
         case $distro in
             ubuntu | Ubuntu )
                 echo $passwd | sudo apt install -y ansible

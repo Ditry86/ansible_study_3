@@ -1,6 +1,12 @@
 ---
 - name: Prepare systems
   hosts: all
+  tags:
+    - prepare
+  handlers:
+    - name: Reboot system
+      become: true
+      ansible.builtin.reboot:
   tasks:
     - name: Disable SELinux
       become: true
@@ -21,19 +27,10 @@
         enabled: true
         state: started
       notify: Reboot system
-  handlers:
-    - name: Reboot system
-      become: true
-      ansible.builtin.reboot:
-- name: Install Clickhouse
+- name: Deploy Clickhouse
   hosts: clickhouse
-  handlers:
-    - name: Start clickhouse service
-      become: true
-      ansible.builtin.service:
-        name: clickhouse-server
-        state: restarted
-      listen: "start clickhouse"
+  tags: 
+    - clickhouse
   tasks:
     - block:
         - name: Get clickhouse distrib
@@ -55,32 +52,30 @@
           - clickhouse-common-static-{{ clickhouse_version }}.rpm
           - clickhouse-client-{{ clickhouse_version }}.rpm
           - clickhouse-server-{{ clickhouse_version }}.rpm
+    - name: Open 8123 clickhouse port
+      become: true
+      ansible.builtin.shell: | 
+        firewall-cmd --zone=public --permanent --add-service=http
+        firewall-cmd --zone=public --permanent --add-port=8123/tcp 
+        firewall-cmd --reload
     - name: Set access_mamnagement privileges
       become: true
       ansible.builtin.lineinfile:
         path: /etc/clickhouse-server/users.xml
         search_string: '            <!-- <access_management>1</access_management> -->'
         line: '            <access_management>1</access_management>'
-      notify: start clickhouse
     - name: Set access to remote host connection
       become: true
       ansible.builtin.lineinfile:
         path: /etc/clickhouse-server/config.xml
         search_string: '    <!-- <listen_host>0.0.0.0</listen_host> -->'
         line: '    <listen_host>0.0.0.0</listen_host>'
-      notify: start clickhouse
-    - name: Flush handlers
-      ansible.builtin.meta: flush_handlers
-    - name: Wait 5 sec
-      ansible.builtin.pause:
-        seconds: 5
     - name: Enable and start clickhouse-server
       become: true
       ansible.builtin.systemd:
         name: clickhouse-server
         enabled: true
         state: started
-      notify: 
     - name: Create database
       ansible.builtin.command: clickhouse-client -q "create database logs;"
       register: create_db
@@ -92,22 +87,15 @@
     - name: Create table
       ansible.builtin.command: clickhouse-client -q "CREATE TABLE IF NOT EXISTS logs.test_logs (file String, host String, message String, source_type String, timestamp DateTime64) ENGINE = TinyLog;"
       changed_when: false
-    - name: Open 8123 clickhouse port
-      become: true
-      ansible.builtin.shell: | 
-        firewall-cmd --zone=public --permanent --add-service=http
-        firewall-cmd --zone=public --permanent --add-port=8123/tcp 
-        firewall-cmd --reload
-- name: Make Vector
+- name: Deploy Vector
   hosts: vector
   handlers:
-    - name: Restart vector service
+    - name: Restart vector
       become: true
       ansible.builtin.service:
         name: vector
         enabled: true
         state: restarted
-      listen: "restart vector"
   tasks:
     - name: Get vector rpm
       ansible.builtin.get_url:
@@ -130,7 +118,7 @@
       ansible.builtin.service:
         name: vector
         enabled: true
-    - name: Change systemd vector.service (start with required config)
+    - name: Change systemd vector.service unit (start with required config)
       become: true
       ansible.builtin.replace:
         path: /etc/systemd/system/multi-user.target.wants/vector.service
@@ -144,10 +132,11 @@
         path: "{{ ansible_user_dir }}/test.log"
         state: touch
         mode: 0644
-      notify: restart vector
+      notify: 
+        - Restart vector
 - name: Make Lighthouse
   hosts: lighthouse
-  tasks:
+  pre_tasks:
     - name: Istall the latest version of git
       become: true
       ansible.builtin.yum:
@@ -180,12 +169,6 @@
         src: nginx.conf
         mode: 0644
         dest: "{{ nginx_conf_dir }}/nginx.conf"
-    - name: Clone lighthouse
-      become: true
-      ansible.builtin.git:
-        repo: "{{ lighthouse_source_url }}"
-        dest: /data/www
-        version: master
     - name: Open http port
       become: true
       ansible.builtin.shell: | 
@@ -201,3 +184,10 @@
     - name: Reboot system
       become: true
       ansible.builtin.reboot:
+  tasks:
+    - name: Clone lighthouse
+      become: true
+      ansible.builtin.git:
+        repo: "{{ lighthouse_source_url }}"
+        dest: /data/www
+        version: master

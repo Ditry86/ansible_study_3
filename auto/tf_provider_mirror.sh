@@ -1,16 +1,13 @@
 #!/usr/bin/env bash
-echo Type your sudo password:' '
-read -s $passwd
-[ -f ${HOME}/.terraformrc ] && echo $passwd | mv ~/.terraformrc ~/.terraformrc.old 
-echo $passwd | touch ~/.terraformrc
-cat << EOF >> ~/.terraformrc
-provider_installation {
-  network_mirror {
-    url = "https://terraform-mirror.yandexcloud.net/"
-    include = ["registry.terraform.io/*/*"]
-  }
-  direct {
-    exclude = ["registry.terraform.io/*/*"]
-  }
-}
-EOF
+
+if [ -f ${HOME}/.terraformrc ] ; then 
+  if cmp -s ${HOME}/.terraformrc ./yandex_provider.example ; then
+    echo $'\n'Yandex provider configuration good!
+    echo --------------------------------------------------------------$'\n'
+  else
+  echo Type your sudo password:' '
+  read -s $passwd
+  echo $passwd | mv ${HOME}/.terraformrc ${HOME}/.terraformrc.old 
+  echo $passwd | cp ./yandex_provider.example ${HOME}/.terraformrc
+  fi
+fi
