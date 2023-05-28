@@ -1,10 +1,6 @@
 ---
 - name: Prepare systems
   hosts: all
-  handlers:
-    - name: Reboot system
-      become: true
-      ansible.builtin.reboot:
   tasks:
     - name: Disable SELinux
       become: true
@@ -24,6 +20,11 @@
         name: firewalld
         enabled: true
         state: started
+      notify: Reboot system
+  handlers:
+    - name: Reboot system
+      become: true
+      ansible.builtin.reboot:
 - name: Install Clickhouse
   hosts: clickhouse
   handlers:
@@ -146,10 +147,6 @@
       notify: restart vector
 - name: Make Lighthouse
   hosts: lighthouse
-  handlers:
-    - name: Reboot system
-      become: true
-      ansible.builtin.reboot:
   tasks:
     - name: Istall the latest version of git
       become: true
@@ -200,3 +197,7 @@
         name: nginx
         enabled: true
       notify: Reboot system
+  handlers:
+    - name: Reboot system
+      become: true
+      ansible.builtin.reboot:

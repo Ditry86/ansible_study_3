@@ -2,11 +2,10 @@
 
 set -Euo pipefail
 
-cur_dir=$(pwd)
-if [ -f "${cur_dir}/key.json" ]; then
-    echo The cloud is already initiated and prepared$'\n'
+if [ -f "./key.json" ]; then
+    echo $'\n'The cloud is already initiated and prepared$'\n'--------------------------------------------------------------$'\n'
 else
-    echo $'\n'Set yc...$'\n'==============================================================$'\n'
+    echo $'\n'Set yc...$'\n'--------------------------------------------------------------$'\n'
     yc config set token ${YC_OA_TOKEN}
     yc iam service-account delete ${YC_ACCOUNT} 2> /dev/null
     serv_acc_id=$(yc iam service-account create ${YC_ACCOUNT} --folder-id ${YC_FOLDER_ID} | grep ^id: | sed 's/id: //')
@@ -19,5 +18,5 @@ else
     yc config profile activate ${YC_ACCOUNT}
 fi
 yc iam create-token > ./token
-echo Checking ssh key.pub...$'\n'==============================================================$'\n'
-[ -f ~/.ssh/id_ed25519.pub ] && echo Pub key allready exist$'\n' || ssh-keygen -t ed25519 -N '' > /dev/null
+echo $'\n'Checking ssh key.pub...$'\n'--------------------------------------------------------------$'\n'
+[ -f ${HOME}/.ssh/id_ed25519.pub ] && echo Pub key allready exist$'\n' || ssh-keygen -t ed25519 -N '' > /dev/null

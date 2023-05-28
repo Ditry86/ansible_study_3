@@ -1,336 +1,84 @@
-# Домашнее задание к занятию "7.3. Основы и принцип работы Терраформ"
+# README к Домашнему заданию по занятию "7.3. Основы и принцип работы Терраформ".
 
-## Задача 1. Создадим бэкэнд в S3 (необязательно, но крайне желательно).
+Данный репозиторий содержит практическое решение для задания по занятию "7.3. Основы и принцип работы Терраформ". 
 
-Если в рамках предыдущего задания у вас уже есть аккаунт AWS, то давайте продолжим знакомство со взаимодействием
-терраформа и aws. 
+В ходе реализации проекта в облаке Yandex создаются: VPC; 3 виртуальные машины (ВМ) с сервисами Clickhouse, Vector, Lighthouse; подсеть 192.168.10.0/24.
 
-1. Создайте s3 бакет, iam роль и пользователя от которого будет работать терраформ. Можно создать отдельного пользователя,
-а можно использовать созданного в рамках предыдущего задания, просто добавьте ему необходимы права, как описано 
-[здесь](https://www.terraform.io/docs/backends/types/s3.html).
-1. Зарегистрируйте бэкэнд в терраформ проекте как описано по ссылке выше. 
-
-
-## Задача 2. Инициализируем проект и создаем воркспейсы. 
-
-1. Выполните `terraform init`:
-    * если был создан бэкэнд в S3, то терраформ создат файл стейтов в S3 и запись в таблице 
-dynamodb.
-    * иначе будет создан локальный файл со стейтами.  
-1. Создайте два воркспейса `stage` и `prod`.
-1. В уже созданный `aws_instance` добавьте зависимость типа инстанса от вокспейса, что бы в разных ворскспейсах 
-использовались разные `instance_type`.
-1. Добавим `count`. Для `stage` должен создаться один экземпляр `ec2`, а для `prod` два. 
-1. Создайте рядом еще один `aws_instance`, но теперь определите их количество при помощи `for_each`, а не `count`.
-1. Что бы при изменении типа инстанса не возникло ситуации, когда не будет ни одного инстанса добавьте параметр
-жизненного цикла `create_before_destroy = true` в один из рессурсов `aws_instance`.
-1. При желании поэкспериментируйте с другими параметрами и рессурсами.
-
-В виде результата работы пришлите:
-* Вывод команды `terraform workspace list`.
-* Вывод команды `terraform plan` для воркспейса `prod`.  
-
-### **Ответ:**
-
-1. Вывод комманды `terraform workspace list`:
-```
-terraform workspace list
-  default
-* prod
-  stage
-```
-2. Вывод команды `terraform plan` для воркспейса `prod`:
-```
-terraform plan -out=terraform.tfplan
-data.yandex_compute_image.ubuntu_22: Reading...
-data.yandex_compute_image.ubuntu_22: Read complete after 1s [id=fd8haecqq3rn9ch89eua]
-
-Terraform used the selected providers to generate the following execution plan. Resource actions are indicated with
-the following symbols:
-  + create
-
-Terraform will perform the following actions:
-
-  # yandex_compute_instance.netology_07_03_count[0] will be created
-  + resource "yandex_compute_instance" "netology_07_03_count" {
-      + created_at                = (known after apply)
-      + folder_id                 = (known after apply)
-      + fqdn                      = (known after apply)
-      + hostname                  = (known after apply)
-      + id                        = (known after apply)
-      + name                      = "prod-0"
-      + network_acceleration_type = "standard"
-      + platform_id               = "standard-v2"
-      + service_account_id        = (known after apply)
-      + status                    = (known after apply)
-      + zone                      = (known after apply)
-
-      + boot_disk {
-          + auto_delete = true
-          + device_name = (known after apply)
-          + disk_id     = (known after apply)
-          + mode        = (known after apply)
-
-          + initialize_params {
-              + block_size  = (known after apply)
-              + description = (known after apply)
-              + image_id    = "fd8haecqq3rn9ch89eua"
-              + name        = (known after apply)
-              + size        = (known after apply)
-              + snapshot_id = (known after apply)
-              + type        = "network-hdd"
-            }
-        }
-
-      + network_interface {
-          + index              = (known after apply)
-          + ip_address         = (known after apply)
-          + ipv4               = true
-          + ipv6               = (known after apply)
-          + ipv6_address       = (known after apply)
-          + mac_address        = (known after apply)
-          + nat                = true
-          + nat_ip_address     = (known after apply)
-          + nat_ip_version     = (known after apply)
-          + security_group_ids = (known after apply)
-          + subnet_id          = (known after apply)
-        }
-
-      + placement_policy {
-          + host_affinity_rules = (known after apply)
-          + placement_group_id  = (known after apply)
-        }
-
-      + resources {
-          + core_fraction = 100
-          + cores         = 2
-          + memory        = 2
-        }
-
-      + scheduling_policy {
-          + preemptible = (known after apply)
-        }
-    }
-
-  # yandex_compute_instance.netology_07_03_count[1] will be created
-  + resource "yandex_compute_instance" "netology_07_03_count" {
-      + created_at                = (known after apply)
-      + folder_id                 = (known after apply)
-      + fqdn                      = (known after apply)
-      + hostname                  = (known after apply)
-      + id                        = (known after apply)
-      + name                      = "prod-1"
-      + network_acceleration_type = "standard"
-      + platform_id               = "standard-v2"
-      + service_account_id        = (known after apply)
-      + status                    = (known after apply)
-      + zone                      = (known after apply)
-
-      + boot_disk {
-          + auto_delete = true
-          + device_name = (known after apply)
-          + disk_id     = (known after apply)
-          + mode        = (known after apply)
-
-          + initialize_params {
-              + block_size  = (known after apply)
-              + description = (known after apply)
-              + image_id    = "fd8haecqq3rn9ch89eua"
-              + name        = (known after apply)
-              + size        = (known after apply)
-              + snapshot_id = (known after apply)
-              + type        = "network-hdd"
-            }
-        }
-
-      + network_interface {
-          + index              = (known after apply)
-          + ip_address         = (known after apply)
-          + ipv4               = true
-          + ipv6               = (known after apply)
-          + ipv6_address       = (known after apply)
-          + mac_address        = (known after apply)
-          + nat                = true
-          + nat_ip_address     = (known after apply)
-          + nat_ip_version     = (known after apply)
-          + security_group_ids = (known after apply)
-          + subnet_id          = (known after apply)
-        }
-
-      + placement_policy {
-          + host_affinity_rules = (known after apply)
-          + placement_group_id  = (known after apply)
-        }
-
-      + resources {
-          + core_fraction = 100
-          + cores         = 2
-          + memory        = 2
-        }
-
-      + scheduling_policy {
-          + preemptible = (known after apply)
-        }
-    }
-
-  # yandex_compute_instance.netology_07_03_for_each["first"] will be created
-  + resource "yandex_compute_instance" "netology_07_03_for_each" {
-      + created_at                = (known after apply)
-      + folder_id                 = (known after apply)
-      + fqdn                      = (known after apply)
-      + hostname                  = (known after apply)
-      + id                        = (known after apply)
-      + name                      = "prod-first"
-      + network_acceleration_type = "standard"
-      + platform_id               = "standard-v2"
-      + service_account_id        = (known after apply)
-      + status                    = (known after apply)
-      + zone                      = (known after apply)
-
-      + boot_disk {
-          + auto_delete = true
-          + device_name = (known after apply)
-          + disk_id     = (known after apply)
-          + mode        = (known after apply)
-
-          + initialize_params {
-              + block_size  = (known after apply)
-              + description = (known after apply)
-              + image_id    = "fd8haecqq3rn9ch89eua"
-              + name        = (known after apply)
-              + size        = (known after apply)
-              + snapshot_id = (known after apply)
-              + type        = "network-hdd"
-            }
-        }
-
-      + network_interface {
-          + index              = (known after apply)
-          + ip_address         = (known after apply)
-          + ipv4               = true
-          + ipv6               = (known after apply)
-          + ipv6_address       = (known after apply)
-          + mac_address        = (known after apply)
-          + nat                = true
-          + nat_ip_address     = (known after apply)
-          + nat_ip_version     = (known after apply)
-          + security_group_ids = (known after apply)
-          + subnet_id          = (known after apply)
-        }
-
-      + placement_policy {
-          + host_affinity_rules = (known after apply)
-          + placement_group_id  = (known after apply)
-        }
-
-      + resources {
-          + core_fraction = 100
-          + cores         = 4
-          + memory        = 4
-        }
-
-      + scheduling_policy {
-          + preemptible = (known after apply)
-        }
-    }
-
-  # yandex_compute_instance.netology_07_03_for_each["second"] will be created
-  + resource "yandex_compute_instance" "netology_07_03_for_each" {
-      + created_at                = (known after apply)
-      + folder_id                 = (known after apply)
-      + fqdn                      = (known after apply)
-      + hostname                  = (known after apply)
-      + id                        = (known after apply)
-      + name                      = "prod-second"
-      + network_acceleration_type = "standard"
-      + platform_id               = "standard-v2"
-      + service_account_id        = (known after apply)
-      + status                    = (known after apply)
-      + zone                      = (known after apply)
-
-      + boot_disk {
-          + auto_delete = true
-          + device_name = (known after apply)
-          + disk_id     = (known after apply)
-          + mode        = (known after apply)
-
-          + initialize_params {
-              + block_size  = (known after apply)
-              + description = (known after apply)
-              + image_id    = "fd8haecqq3rn9ch89eua"
-              + name        = (known after apply)
-              + size        = (known after apply)
-              + snapshot_id = (known after apply)
-              + type        = "network-hdd"
-            }
-        }
-
-      + network_interface {
-          + index              = (known after apply)
-          + ip_address         = (known after apply)
-          + ipv4               = true
-          + ipv6               = (known after apply)
-          + ipv6_address       = (known after apply)
-          + mac_address        = (known after apply)
-          + nat                = true
-          + nat_ip_address     = (known after apply)
-          + nat_ip_version     = (known after apply)
-          + security_group_ids = (known after apply)
-          + subnet_id          = (known after apply)
-        }
-
-      + placement_policy {
-          + host_affinity_rules = (known after apply)
-          + placement_group_id  = (known after apply)
-        }
-
-      + resources {
-          + core_fraction = 100
-          + cores         = 2
-          + memory        = 4
-        }
-
-      + scheduling_policy {
-          + preemptible = (known after apply)
-        }
-    }
-
-  # yandex_vpc_network.netology_net will be created
-  + resource "yandex_vpc_network" "netology_net" {
-      + created_at                = (known after apply)
-      + default_security_group_id = (known after apply)
-      + folder_id                 = (known after apply)
-      + id                        = (known after apply)
-      + labels                    = (known after apply)
-      + name                      = (known after apply)
-      + subnet_ids                = (known after apply)
-    }
-
-  # yandex_vpc_subnet.terraform_07_03_subnet will be created
-  + resource "yandex_vpc_subnet" "terraform_07_03_subnet" {
-      + created_at     = (known after apply)
-      + folder_id      = (known after apply)
-      + id             = (known after apply)
-      + labels         = (known after apply)
-      + name           = "prod-lan"
-      + network_id     = (known after apply)
-      + v4_cidr_blocks = [
-          + "192.168.10.0/24",
-        ]
-      + v6_cidr_blocks = (known after apply)
-      + zone           = (known after apply)
-    }
-
-Plan: 6 to add, 0 to change, 0 to destroy.
-
-─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-
-Saved the plan to: terraform.tfplan
-```
+## Содержание репозитория
 ---
 
-### Как cдавать задание
+1. Каталог terraform. Структура файлов terraform для создания ВМ и соответствующего окружения в облаке Yandex:
+  - Файл описания создаваемых инстансов (ВМ) - instances.tf;
+  - Файл описания переменных (входные, выходные) - vars.tf;
+  - Файл поисания VPC - vpc.tf;
+  - Файл описания провайдера, облачного образа установки ОС - version.tf.
+2. Каталог playbook. Структура файлов ansible для настройки ВМ и установки ПО на них:
+  - Основной файл playbook - site.yml;
+  - Директория inventory с файлом описания рабочей инфраструктуры - prod.yml;
+  - Директория group_vars с файлами описания переменных для груп хостов inventory: clickhouse, vector, lighthouse;
+  - Директория templates с файлами щаблонов конфигураций ПО для хостов: nginx, vector;
+3. Файлы bash-скриптов, make-файл, файл конфигурации (в корневом каталоге) для автоматизации шагов по решению заданий: подготовки окружения, создания ВМ, установки ПО и др.
 
-Выполненное домашнее задание пришлите ссылкой на .md-файл в вашем репозитории.
-
+## Описание проекта
 ---
+
+Для выполнения задания необходимо развернуть три ВМ в Yandex Cloud. В данном проекте создание инфрастуктуры в облаке осуществляется с помощью terraform. Установка и настройка необходимого программного обеспечения производится с помощью ansible playbook.
+
+** Основные параметры для каждой ВМ проекта: **
+CPU - 2 ядра,
+RAM - 4 ГБ,
+Disk - 20 ГБ,
+Два сетевых интерфейса:
+  - локальный, подсеть - 192.168.10.0/24 (IP-адрес присваивается авьлмаически)
+  - внешний (присваевается автоматически)
+Образ операционной системы - Centos 7 (YC Image)
+
+Для начала работы необходимо инициализировать подключение к вашему облаку на Yandex Cloud с соответствующими настройками. Затем произвести инициализацию terraform и развернуть необходимое окружение в облаке через ```terraform plan && terraform apply```. после произвести установку и настройку ПО на созданных ВМ при помощи ```ansible-playbook site.yml -i inventory/prod.yml```.
+
+Произвести вышеописанные действия можно вручную, либо через bash-скрипты, при помощи make-файла (см. ниже). 
+>**Важно!** bash-скрипты, запускаемые через make-файл, созданы и протестированы для Centos (версии 7,8), Ubuntu (версии 20.04 и выше).
+
+## Сценарии (комманды), осуществляемые через make
+---
+
+**1. Установка необходимого ПО на вашем ПК (control node)**
+
+Команда установки:
+
+```
+make install
+```
+Скрипт проверяет наличие установленного нобходимого ПО на ПК, устонавливает отсутствующее.
+После отработки скрипта необходимо выполнить ``` source ~/.bashrc ``` для инициализации установленного ПО в оболочке вашей сессии терминала в системе, либо перезагрузить терминал.
+
+## 2. Подготовка вашего облака Yandex и переменных окружения на вашем ПК
+
+Для работы скриптов на данном шаге реализации проекта, необходимо в корневом каталоге проекта создать и заполнить файл конфигурации проекта - `init.conf` (пример находится в корне проекта под именем `init.conf.example`). В самом файле перечислены все необходимые для работы с облаком Yandex переменные: личный токен для подключения к API облака, clour_id, folder_id, зона облака для развертки инстансов, имя для сервисного аккаунта.
+Комманда подготовки:
+
+    make prepare.
+
+Скрипты производят настройку облака при помощи yc (yandex CLI) на основе указанных переменных в файле `init.conf`. А так же прописывают переменные окружения для работы terraform, производят изменение конфигурационных файлов terraform для устаноки провайдера yandex cloud с зеркала yandex, и проводит инициализацию самого terraform для вашего проекта (в каталоге terraform).
+
+## 3. Развертка ВМ и окружения в облаке
+Команда развертки:
+    
+    make deploy
+
+Соответствует командам terraform: plan, apply. Осуществляет развертку облачной инфраструктуры для проекта: 3 ВМ (), VPC, локальная подсеть.
+
+## 4. Запуск playbook
+
+Команда запуска playbook:
+
+    make ci
+
+Производится, по необходимости, установка необходимых модулей python и ansible. Далее запускается playbook для inventory `prod`.
+
+## 5. Удаление развернутого проекта
+
+Команда удаления окружения:
+
+    make destroy
+
+Удаляются все созданные ВМ, подсети в облаке, а так же удаляются все произведенные настройки yc на вашем ПК (control node) и в облаке. Удаляются временные файлы проекта.

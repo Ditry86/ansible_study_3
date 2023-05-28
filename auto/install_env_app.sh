@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 set -Euo pipefail
 #Check required apps 
-echo $'\n'Check required apps 
+echo $'\n'==============================================================$'\n'
+echo Checking required apps 
 echo ==============================================================$'\n'
 which terraform &> /dev/null
 tf=$?
@@ -13,14 +14,15 @@ which ansible &> /dev/null
 an=$?
 which curl &> /dev/null
 cu=$?
-cur_dir=$(pwd)
 passwd='' 
 distro=$(cat /etc/os-release | grep ^ID= | sed -e 's/ID=["]*//;s/["]*$//')
 stop=0
 #Promt sudo password (if needed)
 if [[ $tf != 0 ]] || [[ $py != 0 ]] || [[ $an != 0 ]] || [[ $cu != 0 ]]
 then
-    echo Type your sudo password:' '
+    echo Found uninstalled software...$'\n'
+    echo --------------------------------------------------------------$'\n'
+    echo Type your sudo password:$'\n'
     read -s $passwd
     case $distro in
         ubuntu | Ubuntu )
@@ -36,22 +38,26 @@ then
     cd tmp 
 else
     stop=1
-    [ $yc == 0 ] && echo --------------------------------------------------------------$'\n'Nothing needs to do$'\n'--------------------------------------------------------------$'\n'
+    [ $yc == 0 ] && echo $'\n'All required software is installed!$'\n'--------------------------------------------------------------$'\n'
+fi
+#Install yc
+if [ $yc != 0 ]; then
+    echo $'\n'==============================================================$'\n'
+    echo Install Yandex CLI...
+    echo $'\n'==============================================================$'\n'
+    curl -L https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash -s -- -a
+    echo --------------------------------------------------------------$'\n'Done!$'\n'
 fi
 if [ $stop == 0 ]; then
     if [ $cu != 0 ]; then
         echo $passwd | sudo apt install -y curl > /dev/null
                 [ $? == 0] && echo Done$'\n'
     fi
-    if [ $yc != 0 ]; then
-    #Install yc
-        echo $'\n'Installed Yandex CLI...$'\n'==============================================================$'\n'
-        curl -L https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash -s -- -a
-        echo --------------------------------------------------------------$'\n'Done!$'\n'
-    fi
     #Install terraform from yandex mirror
     if  [ $tf != 0 ]; then
-        echo $'\n'Installed Terraform...$'\n'==============================================================$'\n'
+        echo $'\n'==============================================================$'\n'
+        echo Install Terraform...
+        echo $'\n'==============================================================$'\n'
         case $distro in
             ubuntu | Ubuntu )
                 echo Installed unzip...$'\b'
@@ -70,7 +76,9 @@ if [ $stop == 0 ]; then
     fi
     #Install python3
     if  [ $py != 0 ]; then
-        echo $'\n'Installed Python3...$'\n'==============================================================$'\n'
+        echo $'\n'==============================================================$'\n'
+        echo Install Python3...
+        echo $'\n'==============================================================$'\n'
 
         case $distro in
             ubuntu | Ubuntu )
@@ -86,7 +94,9 @@ if [ $stop == 0 ]; then
     #Install ansible 
     if  [ $an != 0 ]; then
         #Instal python3 depends packages
-        echo $'\n'Installed Ansible '(by using pip)'...$'\n'==============================================================$'\n'
+        echo $'\n'==============================================================$'\n'
+        echo Install Ansible...
+        echo $'\n'==============================================================$'\n'
         case $distro in
             ubuntu | Ubuntu )
                 echo $passwd | sudo apt install -y ansible
@@ -109,13 +119,9 @@ if [ $stop == 0 ]; then
         fi
         echo $passwd | sudo python3 -m pip install --upgrade pip 
         echo $passwd | sudo python3 -m pip install netaddr 
-        #echo $passwd | sudo python3 -m pip install --upgrade ansible
-        #echo $passwd | sudo echo 'export PATH=$PATH:~/.local/bin' >> ~/.bashrc
-        #echo $passwd | sudo echo 'export PATH=$PATH:/usr/local/bin/ansible' >> ~/.bashrc
-        #echo $passwd | sudo apt install -y ansible
+        echo $passwd | sudo echo 'export PATH=$PATH:~/.local/bin' >> ~/.bashrc
         echo --------------------------------------------------------------$'\n'Done!$'\n'
     fi
-    cd $cur_dir
-    [ -d "$cur_dir/tmp" ] && $(cd $cur_dir && sudo rm -rf "$cur_dir/tmp") || echo $'\n'$cur_dir/tmp is not exist$'\n'
+    [ -d "tmp/" ] && $(echo $passwd | sudo rm -rf "tmp/") || echo $'\n'tmp/ is not exist$'\n'
     echo --------------------------------------------------------------$'\n'Installation completed successfully$'\n'
 fi
