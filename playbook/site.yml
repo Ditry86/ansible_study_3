@@ -89,6 +89,8 @@
       changed_when: false
 - name: Deploy Vector
   hosts: vector
+  tags:
+    - vector
   handlers:
     - name: Restart vector
       become: true
@@ -134,8 +136,10 @@
         mode: 0644
       notify: 
         - Restart vector
-- name: Make Lighthouse
+- name: Deploy Lighthouse
   hosts: lighthouse
+  tags:
+    - lighthouse
   pre_tasks:
     - name: Istall the latest version of git
       become: true
